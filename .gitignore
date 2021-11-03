@@ -1,5 +1,4 @@
 .DS_Store
-CodeForces/*/out
-HackerRank/*/*.class
-TopCoder/*/*.class
-Timus/*/*.exe
+**/out
+**/*.class
+**/*.exe
