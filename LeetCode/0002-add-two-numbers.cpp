@@ -10,6 +10,7 @@
  */
 class Solution {
 public:
+    // Simple addition in columns algo implemented with recursion.
     ListNode* addTwoNumbers(ListNode *l1, ListNode *l2, int overflow = 0) {
         if (l1 == NULL && l2 == NULL) {
             if (overflow == 1) return new ListNode(1);

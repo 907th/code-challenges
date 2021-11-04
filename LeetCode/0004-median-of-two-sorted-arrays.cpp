@@ -19,6 +19,8 @@ public:
 private:
     const int NOT_FOUND = 1 << 30;
 
+    // Use binary search to find an element which would be in specified position if two arrays were merged.
+    // Handle duplicates properly.
     int findElementOnPos(const vector<int>& nums1, const vector<int>& nums2, int pos) {
         int res = findElementOnPosInFirstArary(nums1, nums2, pos);
         if (res != NOT_FOUND) return res;
