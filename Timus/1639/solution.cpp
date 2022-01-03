@@ -6,10 +6,15 @@
 #include <string>
 #include <cstdio>
 #include <cmath>
-#include <cstring>
 
 using namespace std;
 
 int main() {
+    int n, m;
+    cin >> n >> m;
+    if (n * m % 2 == 1)
+        cout << "[second]=:]\n";
+    else
+        cout << "[:=[first]\n";
     return 0;
 }

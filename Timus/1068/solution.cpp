@@ -6,10 +6,13 @@
 #include <string>
 #include <cstdio>
 #include <cmath>
-#include <cstring>
 
 using namespace std;
 
 int main() {
+    int n;
+    cin >> n;
+    int s = abs(n) * (abs(n) + 1) / 2;
+    cout << (n <= 0 ? -s + 1 : s) << '\n';
     return 0;
 }
