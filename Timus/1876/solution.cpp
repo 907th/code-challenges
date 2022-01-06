@@ -3,7 +3,6 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <unordered_map>
 #include <string>
 #include <cstdio>
 #include <cmath>
@@ -13,5 +12,8 @@
 using namespace std;
 
 int main() {
+    int a, b;
+    cin >> a >> b;
+    cout << max(2 * a + 39, 2 * b + 40) << '\n';
     return 0;
 }

@@ -3,15 +3,18 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <unordered_map>
 #include <string>
 #include <cstdio>
 #include <cmath>
 #include <cstring>
-#include <cassert>
 
 using namespace std;
 
 int main() {
+    int a, b;
+    cin >> a >> b;
+    int s = (b + 1) / 2;
+    if (a > 1) s -= a / 2;
+    cout << s << '\n';
     return 0;
 }
