@@ -28,7 +28,7 @@ string print_vec(const VI &v) {
 }
 
 // Use modification of Floyd-Warshall algo to find all cycles of form ... -> a -> k -> b -> ...
-// where path from a to b is the shortest one including only vertices 1 .. k - 1.
+// where path from a to b is the shortest one consisting of vertices 1 .. k - 1 only.
 // See https://www.quora.com/Can-Floyd-Warshall-algorithm-be-used-to-find-shortest-cycle-in-an-undirected-graph/answer/Jay-Chu-28
 int main() {
     while (1) {
@@ -48,40 +48,52 @@ int main() {
             roads[a][b] = min(roads[a][b], l);
             roads[b][a] = min(roads[b][a], l);
         }
+
         int res_len = INF;
         VI res_path;
         int dist[N][N];
-        VI path[N][N];
+        int prev[N][N];
         for (int a = 0; a < n; a++)
             for (int b = 0; b < n; b++) {
                 dist[a][b] = roads[a][b];
-                path[a][b].push_back(a);
-                path[a][b].push_back(b);
+                prev[a][b] = (roads[a][b] == INF ? -1 : a);
             }
         for (int k = 0; k < n; k++) {
+            // Find shortest cycle
+            int res_a, res_b, res_k;
+            res_a = -1;
             for (int a = 0; a < n; a++)
                 for (int b = 0; b < n; b++) {
                     if (a == b || a == k || b == k) continue;
                     if (res_len > dist[a][b] + roads[a][k] + roads[b][k]) {
                         res_len = dist[a][b] + roads[a][k] + roads[b][k];
-                        res_path = path[a][b];
-                        res_path.push_back(k);
-                        // printf("New answer %s (length %d)\n", print_vec(res_path).c_str(), res_len);
+                        res_a = a; res_b = b; res_k = k;
+                        // printf("New cycle found %d -> %d via %d (length %d)\n", a, b, k, res_len);
                     }
                 }
+            // Reconstruct vertices of the cycle
+            if (res_a != -1) {
+                res_path.clear();
+                while (res_b != res_a) {
+                    res_path.push_back(res_b);
+                    res_b = prev[res_a][res_b];
+                }
+                res_path.push_back(res_a);
+                res_path.push_back(res_k);
+                // printf("New answer %s (length %d)\n", print_vec(res_path).c_str(), res_len);
+            }
+            // Relax distances (Floyd-Warshall algo)
             for (int a = 0; a < n; a++)
                 for (int b = 0; b < n; b++) {
                     if (a == b || a == k || b == k) continue;
                     if (dist[a][b] > dist[a][k] + dist[k][b]) {
                         dist[a][b] = dist[a][k] + dist[k][b];
-                        VI new_path = path[a][k];
-                        new_path.pop_back();
-                        new_path.insert(new_path.end(), path[k][b].begin(), path[k][b].end());
-                        path[a][b] = new_path;
-                        // printf("New path %s (length %d)\n", print_vec(path[a][b]).c_str(), dist[a][b]);
+                        prev[a][b] = prev[k][b];
+                        // printf("New path %d -> %d via %d (length %d)\n", a, b, k, dist[a][b]);
                     }
                 }
         }
+
         if (res_len == INF) {
             cout << "No solution.\n";
         } else {
