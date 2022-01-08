@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <array>
 #include <set>
 #include <map>
 #include <unordered_map>
