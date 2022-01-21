@@ -43,7 +43,7 @@ int main() {
                     cout << setw(2) << setfill('0') << reversed_number(j);
                     cout << (j > i - n + 1 ? ' ' : '\n');
                 }
-                //return 0;
+                return 0;
             }
         } else {
             len = 0;
@@ -51,15 +51,5 @@ int main() {
     }
 
     cout << "Glupenky Pierre\n";
-
-    cout.setf(ios::fixed);
-    cout.precision(10);
-    cout << 34.5656 << ' ' << 234.234234 << '\n';
-    cout << 34.5656 << ' ' << 234.234234 << '\n';
-    cout << 34.5656 << ' ' << 234.234234 << '\n';
-    cout << 34.5656 << ' ' << 234.234234 << '\n';
-
-    cout << fixed << setprecision(4);
-    cout << 34.565 << ' ' << 234.2342342342;
     return 0;
 }
