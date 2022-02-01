@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cmath>
 #include <cstring>
+#include <cctype>
 #include <cassert>
 
 using namespace std;
