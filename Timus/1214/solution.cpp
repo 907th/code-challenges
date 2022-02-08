@@ -19,5 +19,12 @@
 using namespace std;
 
 int main() {
+    int x, y;
+    cin >> x >> y;
+    if (x > 0 && y > 0 && (x + y) & 1) {
+        cout << y << ' ' << x << '\n';
+    } else {
+        cout << x << ' ' << y << '\n';
+    }
     return 0;
 }
