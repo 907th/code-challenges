@@ -11,64 +11,54 @@
 
 using namespace std;
 
-// Solution:
-//   Keep two sets of children with desired property.
-//   Take a next child and append it to one of the sets, so that property remains.
-// Algo for chosing a set for the next child:
-//   There can be at most three children in existing sets connected to the next one.
-//   These children may either belong to one set or two different sets. Choose a set which
-//   contains at most 1 connected child. There always exists such a set!
+// Draw all vertices in graph into the same color.
+// Then repeat: while there exists a vertex with 2 or 3 neighbors of same color,
+// change the color of this vertex to the opposite one.
+// This algo is finite because the number of edges between two sets of vertices
+// will encrease after each color change.
 int main() {
-    const int N = 7500;
+    const int N = 7163;
     int n;
-    int ecount[N];
-    int enemies[N][5];
+    int k[N];
+    int e[N][3];
     cin >> n;
     for (int i = 0; i < n; i++) {
-        cin >> ecount[i];
-        for (int j = 0; j < ecount[i]; j++) {
-            cin >> enemies[i][j];
-            enemies[i][j]--;
+        cin >> k[i];
+        for (int j = 0; j < k[i]; j++) {
+            cin >> e[i][j];
+            e[i][j]--;
         }
     }
 
     int colors[N];
-    for (int i = 0; i < n; i++) {
-        int cnt[2];
-        memset(cnt, 0, sizeof(cnt));
-        for (int j = 0; j < ecount[i]; j++) {
-            int e = enemies[i][j];
-            if (e >= i) continue;
-            cnt[colors[e]]++;
+    memset(colors, 0, sizeof(colors));
+    bool change = true;
+    while (change) {
+        change = false;
+        for (int i = 0; i < n; i++) {
+            int o = 0;
+            for (int j = 0; j < k[i]; j++)
+                if (colors[i] == colors[e[i][j]]) o++;
+            if (o >= 2) {
+                colors[i] ^= 1;
+                change = true;
+            }
         }
-        colors[i] = (cnt[0] > cnt[1] ? 1 : 0);
-    }
-
-    for (int i = 0; i < n; i++) {
-        int cnt[2];
-        memset(cnt, 0, sizeof(cnt));
-        for (int j = 0; j < ecount[i]; j++) {
-            int e = enemies[i][j];
-            cnt[colors[e]]++;
-        }
-        assert(cnt[colors[i]] <= 1);
     }
 
     int x = colors[0];
     int cnt[2];
     memset(cnt, 0, sizeof(cnt));
     for (int i = 0; i < n; i++) cnt[colors[i]]++;
-    assert(cnt[0] + cnt[1] == n);
     if (cnt[0] != cnt[1]) x = (cnt[0] > cnt[1] ? 1 : 0);
-    assert(cnt[x] <= cnt[x ^ 1]);
-    cout << cnt[x] << '\n';
-    int k = 0;
-    for (int i = 0; i < n; i++) {
-        if (colors[i] == x) {
-            cout << i + 1;
-            cout << (k < cnt[x] - 1 ? ' ' : '\n');
-            k++;
-        }
+    int ans[N];
+    int ansk = 0;
+    for (int i = 0; i < n; i++)
+        if (colors[i] == x) ans[ansk++] = i + 1;
+    cout << ansk << '\n';
+    for (int i = 0; i < ansk; i++) {
+        cout << ans[i];
+        cout << (i < ansk - 1 ? ' ' : '\n');
     }
     return 0;
 }
