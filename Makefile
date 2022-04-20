@@ -1,3 +1,4 @@
 .PHONY: push
 push:
-	git add . && git commit -m "Update $(shell date +%d.%m.%Y\ %H:%M)" && git push
+	@read -p "What have you done today? " WHATDONE; \
+	git add . && git commit -m "$$WHATDONE" && git push
