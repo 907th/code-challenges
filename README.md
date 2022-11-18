@@ -10,9 +10,7 @@ This repo is structured as follows:
 * 🛠 [Library](Library) folder contains implementations of many popular algorithms and data structures.
   It is my toolbox for solving problems.
 * 📜 This repo has a [Wiki page](https://github.com/907th/code-challenges/wiki)!
-  I put notes, code snippets, ideas, etc. there.
-* ✅ There is a [TODO list](TODO.md) where you can find my open questions/problems/challenges.
-  If you can help me with any, I'll be very greateful!
+  I put notes, hints, code snippets, ideas, etc. there.
 
 ## My Rankings
 
