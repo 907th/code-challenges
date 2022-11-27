@@ -19,7 +19,3 @@ build_release:
 run:
 	./solution.exe
 
-.PHONY: test
-test:
-	rustc --test solution.rs
-
