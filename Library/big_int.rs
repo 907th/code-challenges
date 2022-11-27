@@ -1,8 +1,5 @@
 // Big integer numbers implementation
 
-use std::fmt;
-use std::ops;
-
 type BigIntData = i32;
 const BIG_INT_SIZE: usize = 500;
 const BIG_INT_BASE: BigIntData = 10000;
@@ -24,7 +21,7 @@ impl BigInt {
     }
 }
 
-impl ops::Mul<BigIntData> for BigInt {
+impl std::ops::Mul<BigIntData> for BigInt {
     type Output = Self;
     fn mul(mut self, rhs: BigIntData) -> Self {
         assert!(rhs < BIG_INT_BASE, "BigInt multiplier is too big!");
@@ -47,8 +44,8 @@ impl Default for BigInt {
     }
 }
 
-impl fmt::Display for BigInt {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+impl std::fmt::Display for BigInt {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let mut i = BIG_INT_SIZE - 1;
         while i > 0 && self.data[i] == 0 { i -= 1; }
         write!(f, "{}", self.data[i])?;

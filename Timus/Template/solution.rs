@@ -1,9 +1,11 @@
 #![allow(unused_imports)]
 
 use std::cmp::{max, min, Ordering};
-use std::fmt::{self, Debug};
+use std::fmt::{self, Debug, Display};
 use std::io::{self, BufRead, BufReader, Read, Write};
 use std::str::{self, FromStr};
+use std::collections::{VecDeque, HashMap, BinaryHeap};
+use std::ops::{Mul};
 
 fn solve(n: usize, v: Vec<i32>) -> i32 {
     let mut ans = 0;

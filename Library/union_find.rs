@@ -6,8 +6,6 @@
 // Memory: O(N) where N is the number of elements
 // Reference: https://en.wikipedia.org/wiki/Disjoint-set_data_structure
 
-use std::cmp::Ordering;
-
 struct UnionFind {
     parent: Vec<usize>,
     rank: Vec<usize>
@@ -26,13 +24,13 @@ impl UnionFind {
         let (ri, rj) = (self.rank[i], self.rank[j]);
         if i == j { return false; }
         match ri.cmp(&rj) {
-            Ordering::Greater => {
+            std::cmp::Ordering::Greater => {
                 self.parent[j] = i;
             },
-            Ordering::Less => {
+            std::cmp::Ordering::Less => {
                 self.parent[i] = j;
             }
-            Ordering::Equal => {
+            std::cmp::Ordering::Equal => {
                 self.parent[j] = i;
                 self.rank[i] += 1;
             }

@@ -4,6 +4,7 @@
 // Memory: O(N)
 // Reference: Ukkonen, E. On-line construction of suffix trees. Algorithmica 14, 249–260 (1995)
 
+// FIXME: Do not use 'use' in Library
 use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::HashMap;
