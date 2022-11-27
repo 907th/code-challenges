@@ -1,13 +1,15 @@
+// Big integer numbers implementation
+
 use std::fmt;
 use std::ops;
 
-type BigIntType = i32;
+type BigIntData = i32;
 const BIG_INT_SIZE: usize = 500;
-const BIG_INT_BASE: BigIntType = 10000;
+const BIG_INT_BASE: BigIntData = 10000;
 
 #[derive(Clone, Copy)]
 struct BigInt {
-    data: [BigIntType; BIG_INT_SIZE]
+    data: [BigIntData; BIG_INT_SIZE]
 }
 
 impl BigInt {
@@ -22,9 +24,9 @@ impl BigInt {
     }
 }
 
-impl ops::Mul<BigIntType> for BigInt {
+impl ops::Mul<BigIntData> for BigInt {
     type Output = Self;
-    fn mul(mut self, rhs: BigIntType) -> Self {
+    fn mul(mut self, rhs: BigIntData) -> Self {
         assert!(rhs < BIG_INT_BASE, "BigInt multiplier is too big!");
         let mut o = 0;
         for i in 0..BIG_INT_SIZE {

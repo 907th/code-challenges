@@ -1,9 +1,8 @@
-// Suffix tree construction algorithm.
+// Esko Ukkonen's algorithm for a suffix tree construction
 //
-// Time: O(N) for string of length N
+// Time: O(N) where N is a string length
 // Memory: O(N)
-// Auhtor: Esko Ukkonen
-// Reference: Ukkonen, E. On-line construction of suffix trees. Algorithmica 14, 249–260 (1995).
+// Reference: Ukkonen, E. On-line construction of suffix trees. Algorithmica 14, 249–260 (1995)
 
 use std::rc::Rc;
 use std::cell::RefCell;
