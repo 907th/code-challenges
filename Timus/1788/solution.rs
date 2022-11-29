@@ -7,20 +7,29 @@ use std::str::{self, FromStr};
 use std::collections::{VecDeque, HashMap, BinaryHeap};
 use std::ops::{Mul};
 
-fn solve(n: usize, v: Vec<i32>) -> i32 {
-    let mut ans = 0;
-    for i in 0..n {
-        ans += v[i];
+fn solve(n: usize, m: usize, mut g: Vec<i32>, mut b: Vec<i32>) -> i32 {
+    g.sort(); g.reverse();
+    b.sort(); b.reverse();
+    let mut girls: i32 = g.iter().sum();
+    let mut boys: i32 = b.iter().sum();
+    let mut ans = girls + boys * 0;
+    for i in 0..min(n, m) {
+        girls -= g[i];
+        boys -= b[i];
+        ans = min(ans, girls + boys * (i as i32 + 1));
     }
     ans
 }
 
 #[allow(unused_must_use)]
 fn solve_with_io<R: Read>(inp: &mut Input<R>, out: &mut dyn Write) {
-    let n: usize = inp.ln();
-    let v: Vec<i32> = inp.vec();
-    assert!(v.len() == n);
-    let ans = solve(n, v);
+    let n: usize = inp.sp();
+    let m: usize = inp.ln();
+    let g: Vec<i32> = inp.vec();
+    let b: Vec<i32> = inp.vec();
+    assert!(g.len() == n);
+    assert!(b.len() == m);
+    let ans = solve(n, m, g, b);
     writeln!(out, "{}", ans).unwrap();
 }
 
