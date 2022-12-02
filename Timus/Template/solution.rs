@@ -15,7 +15,6 @@ fn solve(n: usize, v: Vec<i32>) -> i32 {
     ans
 }
 
-#[allow(unused_must_use)]
 fn solve_with_io<R: Read>(inp: &mut Input<R>, out: &mut dyn Write) {
     let n: usize = inp.ln();
     let v: Vec<i32> = inp.vec();
@@ -33,7 +32,6 @@ fn main() {
 // I/O
 
 trait InputRead<T> {
-    fn chr(&mut self) -> char;
     fn vec(&mut self) -> Vec<T>;
     fn until(&mut self, byte: u8) -> T;
     fn ln(&mut self) -> T { self.until(0xA) }
@@ -46,16 +44,16 @@ impl<R: Read> Input<R> {
     fn new(r: R) -> Self {
         Self(BufReader::new(r))
     }
-}
 
-impl<R: Read, T: FromStr> InputRead<T> for Input<R>
-where <T as FromStr>::Err: Debug {
     fn chr(&mut self) -> char {
         let mut buf = [0u8];
         self.0.read_exact(&mut buf).expect("Unable to read exactly 1 byte");
         buf[0] as char
     }
+}
 
+impl<R: Read, T: FromStr> InputRead<T> for Input<R>
+where <T as FromStr>::Err: Debug {
     fn vec(&mut self) -> Vec<T> {
         let mut buf = String::new();
         self.0.read_line(&mut buf).expect("Unable to read line");
@@ -101,5 +99,6 @@ mod test {
             }
         }
         assert!(t > 1, "No tests were found");
+        println!("Total run {} examples", t - 1);
     }
 }
