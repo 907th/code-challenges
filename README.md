@@ -16,8 +16,8 @@ This repo is structured as follows:
 
 📈 Here are the links to my rankings on different platforms:
 
-* [LeetCode](https://leetcode.com/907th/)
 * [Timus](https://acm.timus.ru/author.aspx?id=309777)
+* [LeetCode](https://leetcode.com/907th/)
 * [HackerRank](https://www.hackerrank.com/aychernenkov)
 * [Codeforces](https://codeforces.com/profile/907th)
 * [TopCoder](https://www.topcoder.com/members/Laise)

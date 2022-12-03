@@ -7,16 +7,83 @@ use std::str::FromStr;
 use std::collections::{VecDeque, HashMap, BinaryHeap};
 use std::ops::{Mul};
 
-fn solve(v: Vec<i32>) -> i32 {
-    v.iter().sum()
+#[derive(Clone, Copy)]
+struct Int(i32, i32);
+
+struct IntDetector {
+    int_stack: Vec<Int>,
+    id_stack: Vec<usize>,
+    last_id: usize
+}
+
+impl IntDetector {
+    fn new() -> Self {
+        Self {
+            int_stack: Vec::new(),
+            id_stack: Vec::new(),
+            last_id: 0
+        }
+    }
+
+    fn push(&mut self, int: Int) {
+        while let Some(last_int) = self.int_stack.last() {
+            if last_int.1 < int.0 {
+                self.int_stack.pop();
+                self.id_stack.pop();
+            } else { break; }
+        }
+        self.int_stack.push(int);
+        self.id_stack.push(self.last_id);
+        self.last_id += 1;
+    }
+
+    fn find(&mut self, c: i32) -> isize {
+        while let Some(last_int) = self.int_stack.last() {
+            if last_int.1 < c {
+                self.int_stack.pop();
+                self.id_stack.pop();
+            } else {
+                let id = *self.id_stack.last().unwrap();
+                return id as isize + 1;
+            }
+        }
+        -1
+    }
+}
+
+fn solve(v: &Vec<Int>, q: &Vec<i32>) -> Vec<isize> {
+    let mut ans = Vec::new();
+    let mut int_detector = IntDetector::new();
+    let mut i = 0;
+    for &c in q {
+        while i < v.len() && v[i].0 <= c {
+            int_detector.push(v[i]);
+            i += 1;
+        }
+        let id = int_detector.find(c);
+        ans.push(id);
+    }
+    ans
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
     let n: usize = io.ln();
-    let v: Vec<i32> = io.vec();
-    assert!(v.len() == n);
-    let ans = solve(v);
-    writeln!(io.w, "{}", ans).unwrap();
+    let mut v: Vec<Int> = Vec::new();
+    for _ in 0..n {
+        let a: i32 = io.sp();
+        let b: i32 = io.ln();
+        v.push(Int(a, b));
+    }
+    let m: usize = io.ln();
+    let mut q: Vec<i32> = Vec::new();
+    for _ in 0..m {
+        let c: i32 = io.ln();
+        q.push(c);
+    }
+    let ans = solve(&v, &q);
+    for id in ans {
+        writeln!(io.w, "{}", id).unwrap();
+    }
 }
 
 fn main() {
