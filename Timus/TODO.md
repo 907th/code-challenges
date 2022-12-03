@@ -2,9 +2,9 @@
 
 Find strong math proofs for the following solutions:
 
-* [1494. Monobilliards](Timus/1494/solution.cpp)
-* [1725. Sold Out!](Timus/1725/solution.cpp)
-* [2000. Grand Theft Array V](Timus/2000/solution.rs)
+* [1494. Monobilliards](1494/solution.cpp)
+* [1725. Sold Out!](1725/solution.cpp)
+* [2000. Grand Theft Array V](2000/solution.rs)
 
 Find alternative solutions for the following problems:
 
