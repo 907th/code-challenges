@@ -32,6 +32,12 @@ impl PartialEq for E {
     }
 }
 
+impl Clone for E {
+    fn clone(&self) -> Self {
+        Self::new(self.freq, self.word.clone())
+    }
+}
+
 impl Solution {
     pub fn top_k_frequent(words: Vec<String>, k: i32) -> Vec<String> {
         let mut h: HashMap<String, usize> = HashMap::with_capacity(words.len());
@@ -39,10 +45,12 @@ impl Solution {
             h.entry(s).and_modify(|v| *v += 1).or_insert(1);
         }
         let mut s: BTreeSet<E> = BTreeSet::new();
-        for (w, c) in h.iter() {
+        for (w, c) in h.iter() { // Complexity is O(n*log(k))
             s.insert(E::new(*c, w.clone()));
-            // If I was able to remove the last element of the set when s.len() > k
-            // then overall complexity would be O(n*log(k))
+            if s.len() > k as usize {
+                let e = s.iter().next_back().unwrap().clone();
+                s.remove(&e);
+            }
         }
         s.iter().map(|e| e.word.clone()).take(k as usize).collect()
     }
