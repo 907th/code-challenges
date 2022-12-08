@@ -14,11 +14,7 @@ fn next_combination(n: usize, r: usize, v: &mut Vec<usize>) -> bool {
         }
         return true;
     }
-    if v[r - 1] < n - 1 {
-        v[r - 1] = v[r - 1] + 1;
-        return true;
-    }
-    for j in (0..(r - 1)).rev() {
+    for j in (0..r).rev() {
         if v[j] < n - r + j {
             v[j] = v[j] + 1;
             for s in (j + 1)..r {
