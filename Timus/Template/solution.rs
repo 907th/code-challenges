@@ -26,13 +26,6 @@ fn main() {
 
 // I/O
 
-trait IOFn<T> {
-    fn vec(&mut self) -> Vec<T>;
-    fn until(&mut self, byte: u8) -> T;
-    fn ln(&mut self) -> T { self.until(0xA) }
-    fn sp(&mut self) -> T { self.until(0x20) }
-}
-
 struct IO<R: Read, W: Write> {
     r: BufReader<R>,
     w: BufWriter<W>
@@ -49,21 +42,23 @@ impl<R: Read, W: Write> IO<R, W> {
         self.r.read_exact(&mut buf).expect("Unable to read exactly 1 byte");
         buf[0] as char
     }
-}
 
-impl<R: Read, W: Write, T: FromStr> IOFn<T> for IO<R, W> where <T as FromStr>::Err: Debug {
-    fn vec(&mut self) -> Vec<T> {
+    fn vec<T: FromStr>(&mut self) -> Vec<T> where <T as FromStr>::Err: Debug {
         let mut buf = String::new();
         self.r.read_line(&mut buf).expect("Unable to read line");
         buf.trim().split(' ').map(|s| s.parse::<T>().expect("Unable to parse string")).collect()
     }
 
-    fn until(&mut self, byte: u8) -> T {
+    fn until<T: FromStr>(&mut self, byte: u8) -> T where <T as FromStr>::Err: Debug {
         let mut buf = Vec::new();
         self.r.read_until(byte, &mut buf).expect("Unable to read until specified byte");
         let str = String::from_utf8(buf).expect("String is not utf8");
         str.trim().parse().expect("Unable to parse string")
     }
+
+    fn ln<T: FromStr>(&mut self) -> T where <T as FromStr>::Err: Debug { self.until(0xA) }
+
+    fn sp<T: FromStr>(&mut self) -> T where <T as FromStr>::Err: Debug { self.until(0x20) }
 }
 
 // Tests
