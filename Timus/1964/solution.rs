@@ -6,17 +6,26 @@ use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::str::FromStr;
 use std::collections::{VecDeque, HashMap, BinaryHeap};
 use std::ops::{Mul};
-use std::mem;
 
-fn solve(v: Vec<i32>) -> i32 {
-    v.iter().sum()
+fn solve(n: u32, k: usize, v: Vec<u32>) -> u32 {
+    let mut sum: u32 = 0;
+    let mut div: usize = 0;
+    for k in v {
+        sum = sum.checked_add(k).unwrap();
+        if sum > n {
+            sum -= n;
+            div += 1;
+        }
+    }
+    if div >= k - 1 { sum } else { 0 }
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
-    let n: usize = io.ln();
-    let v: Vec<i32> = io.vec();
-    assert!(v.len() == n);
-    let ans = solve(v);
+    let n: u32 = io.sp();
+    let k: usize = io.ln();
+    let v: Vec<u32> = io.vec();
+    assert!(v.len() == k);
+    let ans = solve(n, k, v);
     writeln!(io.w, "{}", ans).unwrap();
 }
 

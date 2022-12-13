@@ -6,17 +6,43 @@ use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::str::FromStr;
 use std::collections::{VecDeque, HashMap, BinaryHeap};
 use std::ops::{Mul};
-use std::mem;
+use std::mem::{swap, take, replace};
 
-fn solve(v: Vec<i32>) -> i32 {
-    v.iter().sum()
+fn solve(n: usize, v: Vec<i32>) -> i32 {
+    const MAX: i32 = i32::MAX;
+    let pow: usize = 1 << n;
+    let mut m1 = vec![MAX; pow];
+    let mut m2 = vec![MAX; pow];
+    let mut a = &mut m1;
+    let mut b = &mut m2;
+    a[0] = 0;
+    let mut ans = MAX;
+    for _ in 0..n {
+        swap(b, &mut vec![MAX; pow]);
+        for i in 0..(1 << n) {
+            if a[i] == MAX { continue; }
+            for j in 0..n {
+                let mut s: usize = 1 << j;
+                if j > 0 { s |= 1 << (j - 1); } else { s |= 1 << (n - 1); }
+                if j < n - 1 { s |= 1 << (j + 1); } else { s |= 1; }
+                let mut u: i32 = a[i];
+                for k in 0..n {
+                    if ((1 << k) & (i | s)) == 0 { u += v[k]; }
+                }
+                b[i | s] = min(b[i | s], u);
+            }
+        }
+        ans = min(ans, b[pow - 1]);
+        swap(&mut a, &mut b);
+    }
+    ans
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
     let n: usize = io.ln();
     let v: Vec<i32> = io.vec();
     assert!(v.len() == n);
-    let ans = solve(v);
+    let ans = solve(n, v);
     writeln!(io.w, "{}", ans).unwrap();
 }
 

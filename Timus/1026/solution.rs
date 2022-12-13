@@ -6,18 +6,27 @@ use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::str::FromStr;
 use std::collections::{VecDeque, HashMap, BinaryHeap};
 use std::ops::{Mul};
-use std::mem;
-
-fn solve(v: Vec<i32>) -> i32 {
-    v.iter().sum()
-}
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
     let n: usize = io.ln();
-    let v: Vec<i32> = io.vec();
-    assert!(v.len() == n);
-    let ans = solve(v);
-    writeln!(io.w, "{}", ans).unwrap();
+    let mut v: [usize; 5001] = [0; 5001];
+    for _ in 0..n {
+        let x: usize = io.ln();
+        v[x] += 1;
+    }
+    let _: String = io.ln();
+    let q: usize = io.ln();
+    for _ in 0..q {
+        let i: usize = io.ln();
+        let mut k: usize = 0;
+        for (j, &u) in v.iter().enumerate() {
+            k += u;
+            if k >= i {
+                writeln!(io.w, "{}", j).unwrap();
+                break;
+            }
+        }
+    }
 }
 
 fn main() {

@@ -8,16 +8,47 @@ use std::collections::{VecDeque, HashMap, BinaryHeap};
 use std::ops::{Mul};
 use std::mem;
 
-fn solve(v: Vec<i32>) -> i32 {
-    v.iter().sum()
+#[derive(Copy, Clone, Debug)]
+struct P {
+    id: usize,
+    x: f64,
+    y: f64
+}
+
+impl P {
+    fn new(id: usize, x: f64, y: f64) -> P {
+        P { id, x, y }
+    }
+
+    fn scalar(self, a: P, b: P) -> f64 {
+        (a.x - self.x) * (b.y - self.y) - (a.y - self.y) * (b.x - self.x)
+    }
+}
+
+fn solve(n: usize, mut p: Vec<P>) -> (usize, usize) {
+    let mut z: usize = 0;
+    for i in 1..n {
+        if p[i].y < p[z].y || (p[i].y == p[z].y && p[i].x < p[z].x) { z = i; }
+    }
+    if z > 0 { p.swap(0, z); }
+    let o = p[0];
+    p[1..n].sort_by(|&a, &b| {
+        let s = o.scalar(a, b);
+        0.0.partial_cmp(&s).unwrap()
+    });
+    (o.id, p[n / 2].id)
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
     let n: usize = io.ln();
-    let v: Vec<i32> = io.vec();
-    assert!(v.len() == n);
-    let ans = solve(v);
-    writeln!(io.w, "{}", ans).unwrap();
+    let mut p: Vec<P> = Vec::new();
+    for id in 1..=n {
+        let x: f64 = io.sp();
+        let y: f64 = io.ln();
+        p.push(P::new(id, x, y));
+    }
+    let ans: (usize, usize) = solve(n, p);
+    writeln!(io.w, "{} {}", ans.0, ans.1).unwrap();
 }
 
 fn main() {
