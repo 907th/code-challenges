@@ -1,6 +1,6 @@
 // Data structure for storing disjoint sets
 //
-// Time: O(M*A(N)) where M is the number of operations (union of find),
+// Time: O(M*A(N)) where M is the number of operations (union or find),
 // N is the number of elements, A is the inverse Ackerman function
 // Hint: Having A <= 4 for any practical number, the time complexity is almost linear on M
 // Memory: O(N) where N is the number of elements
