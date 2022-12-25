@@ -4,20 +4,34 @@ use std::cmp::{max, min, Ordering};
 use std::fmt::{Debug, Display};
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::str::FromStr;
-use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
+use std::collections::{VecDeque, HashMap, BinaryHeap};
 use std::ops::{Mul};
 use std::mem;
 
-fn solve(v: Vec<i32>) -> i32 {
-    v.iter().sum()
+const WORDS: [&str; 6] = ["out", "output", "puton", "in", "input", "one"];
+
+fn solve(s: String) -> bool {
+    let n = s.len();
+    let mut dp = vec![false; n + 1];
+    dp[0] = true;
+    for i in 0..n {
+        if !dp[i] { continue; }
+        for w in WORDS {
+            if s[i..].starts_with(w) {
+                dp[i + w.len()] = true;
+            }
+        }
+    }
+    dp[n]
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
     let n: usize = io.ln();
-    let v: Vec<i32> = io.vec();
-    assert!(v.len() == n);
-    let ans = solve(v);
-    writeln!(io.w, "{}", ans).unwrap();
+    for _ in 0..n {
+        let s: String = io.ln();
+        let ans = solve(s);
+        writeln!(io.w, "{}", if ans { "YES" } else { "NO" }).unwrap();
+    }
 }
 
 fn main() {

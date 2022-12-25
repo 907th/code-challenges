@@ -8,16 +8,18 @@ use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
 use std::ops::{Mul};
 use std::mem;
 
-fn solve(v: Vec<i32>) -> i32 {
-    v.iter().sum()
-}
-
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
-    let n: usize = io.ln();
-    let v: Vec<i32> = io.vec();
-    assert!(v.len() == n);
-    let ans = solve(v);
-    writeln!(io.w, "{}", ans).unwrap();
+    let mut set: HashSet<String> = HashSet::new();
+    let s: String = io.ln();
+    set.insert(s);
+    loop {
+        let s: String = io.ln();
+        if s == "#" { break; }
+        for x in s.split('-') {
+            set.insert(String::from(x));
+        }
+    }
+    writeln!(io.w, "{}", set.len() - 1).unwrap();
 }
 
 fn main() {
