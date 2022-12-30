@@ -5,16 +5,113 @@ use std::fmt::{Debug, Display};
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::str::FromStr;
 use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
-use std::ops::{Mul};
+use std::ops::{Mul, Add};
 use std::mem;
 
-fn solve(...) -> ... {
-    ...
+type BigIntData = i32;
+const BIG_INT_SIZE: usize = 500;
+const BIG_INT_BASE: BigIntData = 10000;
+
+#[derive(Clone, Copy)]
+struct BigInt {
+    data: [BigIntData; BIG_INT_SIZE]
+}
+
+impl BigInt {
+    fn zero() -> Self {
+        Self { data: [0; BIG_INT_SIZE] }
+    }
+
+    fn one() -> Self {
+        BigInt::zero() + 1
+    }
+
+    fn new(value: BigIntData) -> Self {
+        BigInt::one() * value
+    }
+}
+
+impl Default for BigInt {
+    fn default() -> Self {
+        Self::zero()
+    }
+}
+
+impl std::ops::Mul<BigIntData> for BigInt {
+    type Output = Self;
+    fn mul(mut self, rhs: BigIntData) -> Self {
+        const ERROR: &str = "BigInt multiplication overflow!";
+        let mut o = 0;
+        for i in 0..BIG_INT_SIZE {
+            let m = self.data[i].checked_mul(rhs).expect(ERROR).checked_add(o).expect(ERROR);
+            self.data[i] = m % BIG_INT_BASE;
+            o = m / BIG_INT_BASE;
+        }
+        assert!(o == 0, "{}", ERROR);
+        self
+    }
+}
+
+impl std::ops::Add<BigInt> for BigInt {
+    type Output = Self;
+    fn add(mut self, rhs: BigInt) -> Self {
+        const ERROR: &str = "BigInt addition overflow!";
+        let mut o = 0;
+        for i in 0..BIG_INT_SIZE {
+            let s = self.data[i].checked_add(rhs.data[i]).expect(ERROR).checked_add(o).expect(ERROR);
+            self.data[i] = s % BIG_INT_BASE;
+            o = s / BIG_INT_BASE;
+        }
+        assert!(o == 0, "{}", ERROR);
+        self
+    }
+}
+
+impl std::ops::Add<BigIntData> for BigInt {
+    type Output = Self;
+    fn add(mut self, rhs: BigIntData) -> Self {
+        const ERROR: &str = "BigInt addition overflow!";
+        let mut o = rhs;
+        for i in 0..BIG_INT_SIZE {
+            if o == 0 { break; }
+            let s = self.data[i].checked_add(o).expect(ERROR);
+            self.data[i] = s % BIG_INT_BASE;
+            o = s / BIG_INT_BASE;
+        }
+        assert!(o == 0, "{}", ERROR);
+        self
+    }
+}
+
+// TODO: Impl other operators (/, %, ==, >, etc).
+
+impl std::fmt::Display for BigInt {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let mut i = BIG_INT_SIZE - 1;
+        while i > 0 && self.data[i] == 0 { i -= 1; }
+        write!(f, "{}", self.data[i])?;
+        while i > 0 {
+            i -= 1;
+            write!(f, "{:0>4}", self.data[i])?;
+        }
+        Ok(())
+    }
+}
+
+fn solve(n: usize, k: usize) -> BigInt {
+    let mut dp = vec![vec![BigInt::zero(); 2]; n];
+    dp[0][0] = BigInt::new(k as i32 - 1);
+    for i in 1..n {
+        dp[i][0] = (dp[i - 1][0] + dp[i - 1][1]) * (k as i32 - 1);
+        dp[i][1] = dp[i - 1][0];
+    }
+    dp[n - 1][0] + dp[n - 1][1]
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
-    ...
-    let ans = solve(...);
+    let n: usize = io.ln();
+    let k: usize = io.ln();
+    let ans = solve(n, k);
     writeln!(io.w, "{}", ans).unwrap();
 }
 

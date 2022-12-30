@@ -11,38 +11,71 @@ struct BigInt {
 
 impl BigInt {
     fn zero() -> Self {
-        BigInt{ data: [0; BIG_INT_SIZE] }
+        Self { data: [0; BIG_INT_SIZE] }
     }
 
     fn one() -> Self {
-        let mut one = Self::zero();
-        one.data[0] = 1;
-        one
+        BigInt::zero() + 1
+    }
+
+    fn new(value: BigIntData) -> Self {
+        BigInt::one() * value
     }
 }
-
-impl std::ops::Mul<BigIntData> for BigInt {
-    type Output = Self;
-    fn mul(mut self, rhs: BigIntData) -> Self {
-        assert!(rhs < BIG_INT_BASE, "BigInt multiplier is too big!");
-        let mut o = 0;
-        for i in 0..BIG_INT_SIZE {
-            let m = self.data[i] * rhs + o;
-            self.data[i] = m % BIG_INT_BASE;
-            o = m / BIG_INT_BASE;
-        }
-        assert!(o == 0, "BigInt multiplication overflow!");
-        self
-    }
-}
-
-// TODO: Impl other operators (+, /, %, etc).
 
 impl Default for BigInt {
     fn default() -> Self {
         Self::zero()
     }
 }
+
+impl std::ops::Mul<BigIntData> for BigInt {
+    type Output = Self;
+    fn mul(mut self, rhs: BigIntData) -> Self {
+        const ERROR: &str = "BigInt multiplication overflow!";
+        let mut o = 0;
+        for i in 0..BIG_INT_SIZE {
+            let m = self.data[i].checked_mul(rhs).expect(ERROR).checked_add(o).expect(ERROR);
+            self.data[i] = m % BIG_INT_BASE;
+            o = m / BIG_INT_BASE;
+        }
+        assert!(o == 0, "{}", ERROR);
+        self
+    }
+}
+
+impl std::ops::Add<BigInt> for BigInt {
+    type Output = Self;
+    fn add(mut self, rhs: BigInt) -> Self {
+        const ERROR: &str = "BigInt addition overflow!";
+        let mut o = 0;
+        for i in 0..BIG_INT_SIZE {
+            let s = self.data[i].checked_add(rhs.data[i]).expect(ERROR).checked_add(o).expect(ERROR);
+            self.data[i] = s % BIG_INT_BASE;
+            o = s / BIG_INT_BASE;
+        }
+        assert!(o == 0, "{}", ERROR);
+        self
+    }
+}
+
+impl std::ops::Add<BigIntData> for BigInt {
+    type Output = Self;
+    fn add(mut self, rhs: BigIntData) -> Self {
+        const ERROR: &str = "BigInt addition overflow!";
+        let mut o = rhs;
+        for i in 0..BIG_INT_SIZE {
+            if o == 0 { break; }
+            let s = self.data[i].checked_add(o).expect(ERROR);
+            self.data[i] = s % BIG_INT_BASE;
+            o = s / BIG_INT_BASE;
+        }
+        assert!(o == 0, "{}", ERROR);
+        self
+    }
+}
+
+// TODO: Impl other operators (/, %, ==, >, etc).
 
 impl std::fmt::Display for BigInt {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
