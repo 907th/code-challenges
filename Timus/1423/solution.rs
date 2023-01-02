@@ -8,13 +8,97 @@ use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
 use std::ops::{Mul, Add, Shl};
 use std::mem;
 
-fn solve(...) -> ... {
-    ...
+// A value of the polynomail rolling hash function
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Hash(u64, u64);
+
+impl Hash {
+    const B0: u64 = 10007;
+    const B1: u64 = 10009;
+    const P0: u64 = 1000000093;
+    const P1: u64 = 1000000097;
+
+    fn new(v: u64) -> Self { Self(v, v) }
+    fn zero() -> Self { Self::new(0) }
+    fn one() -> Self { Self::new(1) }
+}
+
+impl Add for Hash {
+    type Output = Self;
+    fn add(self, other: Self) -> Self {
+        Self(
+            self.0.checked_add(other.0).unwrap() % Self::P0,
+            self.1.checked_add(other.1).unwrap() % Self::P1
+        )
+    }
+}
+
+impl Mul for Hash {
+    type Output = Self;
+    fn mul(self, other: Self) -> Self {
+        Self(
+            self.0.checked_mul(other.0).unwrap() % Self::P0,
+            self.1.checked_mul(other.1).unwrap() % Self::P1
+        )
+    }
+}
+
+impl Shl<usize> for Hash {
+    type Output = Self;
+    // x << rhs means x * BASE^rhs (implemented with fast power algorithm).
+    // Complexity of this operation is O(log(rhs)).
+    fn shl(self, rhs: usize) -> Self {
+        let mut i = rhs;
+        let mut b0 = Self::B0;
+        let mut b1 = Self::B1;
+        let mut v0 = self.0;
+        let mut v1 = self.1;
+        while i > 0 {
+            if i & 1 == 1 {
+                v0 = v0.checked_mul(b0).unwrap() % Self::P0;
+                v1 = v1.checked_mul(b1).unwrap() % Self::P1;
+            }
+            b0 = b0.checked_mul(b0).unwrap() % Self::P0;
+            b1 = b1.checked_mul(b1).unwrap() % Self::P1;
+            i = i >> 1;
+        }
+        Self(v0, v1)
+    }
+}
+
+// Use Rabin-Karp hashing algorithm
+fn solve(n: usize, source: &Vec<u8>, target: &Vec<u8>) -> isize {
+    let mut t = Hash::zero();
+    for &b in target.iter() {
+        t = (t << 1) + Hash::new(b as u64);
+    }
+
+    let mut s = vec![Hash::zero(); n];
+    for (i, &b) in source.iter().enumerate() {
+        if i == 0 {
+            s[i] = Hash::new(b as u64);
+        } else {
+            s[i] = (s[i - 1] << 1) + Hash::new(b as u64);
+        }
+    }
+
+    let mut h = Hash::zero();
+    for (i, &b) in source.iter().rev().enumerate() {
+        h = h + (Hash::new(b as u64) << i);
+        let w = n - i - 1;
+        let mut x = h << w;
+        if w > 0 { x = x + s[w - 1]; }
+        if x == t { return ((i + 1) % n) as isize; }
+    }
+
+    -1
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
-    ...
-    let ans = solve(...);
+    let n = io.ln::<usize>();
+    let source = io.bytes(n); io.ln::<String>();
+    let target = io.bytes(n); io.ln::<String>();
+    let ans = solve(n, &source, &target);
     writeln!(io.w, "{}", ans).unwrap();
 }
 

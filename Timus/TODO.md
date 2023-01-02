@@ -12,3 +12,4 @@ Find alternative solutions for the following problems:
 * [1846. GCD 2010](https://acm.timus.ru/problem.aspx?space=1&num=1846) - Solve using interval/Fenwick tree.
 * [1987. Nested Segments](https://acm.timus.ru/problem.aspx?space=1&num=1987) - Solve using range/interval tree.
 * [1135. Recruits](https://acm.timus.ru/problem.aspx?space=1&num=1135) - Proove that all rotations can be calculated independently (one at a time).
+* [1423. String Tale](https://acm.timus.ru/problem.aspx?space=1&num=1423) - Solve using prefix-function.
