@@ -8,14 +8,37 @@ use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
 use std::ops::{Neg, Mul, Add, Shl};
 use std::mem;
 
-fn solve(...) -> ... {
-    ...
+type Pair = (f64, f64);
+
+const MOVEMENTS: [(Pair, Pair); 10] = [
+    (( 0.0,  0.0), ( 0.0,  0.0)), // 0
+    (( 0.0, -1.0), ( 0.0, -1.0)), // 1
+    (( 0.0,  0.0), (-1.0,  0.0)), // 2
+    (( 0.0,  1.0), ( 0.0, -1.0)), // 3
+    ((-1.0,  0.0), ( 0.0,  0.0)), // 4
+    (( 0.0,  0.0), ( 0.0,  0.0)), // 5
+    (( 1.0,  0.0), ( 0.0,  0.0)), // 6
+    (( 0.0, -1.0), ( 0.0,  1.0)), // 7
+    (( 0.0,  0.0), ( 1.0,  0.0)), // 8
+    (( 0.0,  1.0), ( 0.0,  1.0))  // 9
+];
+
+fn solve(s: &String) -> Pair {
+    let mut x = (0.0, 0.0);
+    let mut y = (0.0, 0.0);
+    for c in s.chars() {
+        if c == '0' { break; }
+        let (dx, dy) = MOVEMENTS[(c as u8 - '0' as u8) as usize];
+        x = (x.0 + dx.0, x.1 + dx.1);
+        y = (y.0 + dy.0, y.1 + dy.1);
+    }
+    (x.0 + x.1 * 0.5f64.sqrt(), y.0 + y.1 * 0.5f64.sqrt())
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
-    ...
-    let ans = solve(...);
-    writeln!(io.w, "{}", ans).unwrap();
+    let s = io.ln::<String>();
+    let (x, y) = solve(&s);
+    writeln!(io.w, "{:.16} {:.16}", x, y).unwrap();
 }
 
 fn main() {

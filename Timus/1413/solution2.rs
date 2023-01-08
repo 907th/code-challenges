@@ -8,14 +8,103 @@ use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
 use std::ops::{Neg, Mul, Add, Shl};
 use std::mem;
 
-fn solve(...) -> ... {
-    ...
+#[derive(Clone, Copy, Debug)]
+struct Num {
+    a: i64,
+    b: f64
+}
+
+impl Num {
+    fn new(a: i64, b: f64) -> Self {
+        Self { a, b }.normalize()
+    }
+
+    fn zero() -> Self {
+        Self::new(0, 0.0)
+    }
+
+    fn one() -> Self {
+        Self::new(1, 0.0)
+    }
+
+    fn sqrt() -> Self {
+        Self::new(0, 0.5f64.sqrt())
+    }
+
+    fn normalize(mut self) -> Self {
+        if self.b.abs() >= 1.0 {
+            let x = self.b as i64;
+            self.a = self.a + x;
+            self.b = self.b - x as f64;
+        }
+        assert!(self.b.abs() < 1.0, "Fractional part must be in (-1, 1) interval!");
+        if self.a > 0 && self.b < 0.0 {
+            self.a = self.a - 1;
+            self.b = self.b + 1.0;
+        }
+        if self.a < 0 && self.b > 0.0 {
+            self.a = self.a + 1;
+            self.b = self.b - 1.0;
+        }
+        assert!(self.b.abs() < 1.0, "Fractional part must still be in (-1, 1) interval!");
+        assert!((self.a >= 0 && self.b >= 0.0) || (self.a <= 0 && self.b <= 0.0), "Both parts must have the same sign!");
+        self
+    }
+
+    fn is_negative(&self) -> bool {
+        self.a < 0 || self.b < 0.0
+    }
+}
+
+impl Neg for Num {
+    type Output = Self;
+    fn neg(self) -> Self {
+        Self::new(-self.a, -self.b)
+    }
+}
+
+impl Add<Num> for Num {
+    type Output = Self;
+    fn add(self, other: Self) -> Self {
+        Self::new(self.a + other.a, self.b + other.b)
+    }
+}
+
+impl Display for Num {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        if self.is_negative() { write!(f, "-")?; }
+        write!(f, "{}.{}", self.a.abs(), (self.b.abs() * 1e16) as i64)
+    }
+}
+
+fn solve(s: &String) -> (Num, Num) {
+    let movements: [(Num, Num); 10] = [
+        (  Num::zero(),  Num::zero() ), // 0
+        ( -Num::sqrt(), -Num::sqrt() ), // 1
+        (  Num::zero(), -Num::one()  ), // 2
+        (  Num::sqrt(), -Num::sqrt() ), // 3
+        ( -Num::one(),   Num::zero() ), // 4
+        (  Num::zero(),  Num::zero() ), // 5
+        (  Num::one(),   Num::zero() ), // 6
+        ( -Num::sqrt(),  Num::sqrt() ), // 7
+        (  Num::zero(),  Num::one()  ), // 8
+        (  Num::sqrt(),  Num::sqrt() )  // 9
+    ];
+    let mut x = Num::zero();
+    let mut y = Num::zero();
+    for c in s.chars() {
+        if c == '0' { break; }
+        let (dx, dy) = movements[(c as u8 - '0' as u8) as usize];
+        x = x + dx;
+        y = y + dy;
+    }
+    (x, y)
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
-    ...
-    let ans = solve(...);
-    writeln!(io.w, "{}", ans).unwrap();
+    let s = io.ln::<String>();
+    let (x, y) = solve(&s);
+    writeln!(io.w, "{} {}", x, y).unwrap();
 }
 
 fn main() {

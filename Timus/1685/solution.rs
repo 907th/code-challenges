@@ -5,16 +5,30 @@ use std::fmt::{Debug, Display};
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::str::FromStr;
 use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
-use std::ops::{Neg, Mul, Add, Shl};
+use std::ops::{Mul, Add, Shl};
 use std::mem;
 
-fn solve(...) -> ... {
-    ...
+fn solve(s: String) -> String {
+    let n = s.len();
+    let s: Vec<char> = s.chars().collect();
+    let mut t = vec!['?'; n];
+    let mut q = Vec::new();
+    let mut i = 0usize;
+    q.push((0, n - 1));
+    while !q.is_empty() {
+        let (l, r) = q.pop().unwrap();
+        let m = (l + r) / 2;
+        t[m] = s[i];
+        i += 1;
+        if m < r { q.push((m + 1, r)); }
+        if l < m { q.push((l, m - 1)); }
+    }
+    t.iter().collect::<String>()
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
-    ...
-    let ans = solve(...);
+    let s = io.ln::<String>();
+    let ans = solve(s);
     writeln!(io.w, "{}", ans).unwrap();
 }
 
