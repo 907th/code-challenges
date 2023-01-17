@@ -36,16 +36,16 @@ fn find_swap(v: &Vec<i32>) -> Option<(usize, usize)> {
     }
     for i in 1..n {
         let prev =
-            if i - 1 == p1 { p2 }
-            else if i - 1 == p2 { p1 }
+            if i - 1 == pair.0 { pair.1 }
+            else if i - 1 == pair.1 { pair.0 }
             else { i - 1 };
         let this =
-            if i == p1 { p2 }
-            else if i == p2 { p1 }
+            if i == pair.0 { pair.1 }
+            else if i == pair.1 { pair.0 }
             else { i };
         if v[prev] > v[this] { return None; }
     }
-    Some((p1, p2))
+    Some(pair)
 }
 
 fn solve(mut v: Vec<i32>) -> Solution {
