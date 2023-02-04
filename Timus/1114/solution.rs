@@ -27,30 +27,11 @@ impl BigInt {
     fn one() -> Self {
         BigInt::zero() + 1
     }
-
-    fn new(value: BigIntData) -> Self {
-        BigInt::one() * value
-    }
 }
 
 impl Default for BigInt {
     fn default() -> Self {
         Self::zero()
-    }
-}
-
-impl std::ops::Mul<BigIntData> for BigInt {
-    type Output = Self;
-    fn mul(mut self, rhs: BigIntData) -> Self {
-        const ERROR: &str = "BigInt multiplication overflow!";
-        let mut o = 0;
-        for i in 0..BIG_INT_SIZE {
-            let m = self.data[i].checked_mul(rhs).expect(ERROR).checked_add(o).expect(ERROR);
-            self.data[i] = m % BIG_INT_BASE;
-            o = m / BIG_INT_BASE;
-        }
-        assert!(o == 0, "{}", ERROR);
-        self
     }
 }
 
@@ -98,50 +79,69 @@ impl std::fmt::Display for BigInt {
     }
 }
 
-struct Matrix<T, const N: usize> {
+// Multi-dimensional array implementation
+
+struct MDArray<T, const N: usize> {
     data: Vec<T>,
-    mult: [usize; N]
+    dimensions: [usize; N]
 }
 
-impl<T, const N: usize> Matrix<T, N> {
-    fn new(sizes: [usize; N]) -> Self {
-        let n = sizes.iter().product();
-        let mut mult = [1usize; N];
-        for i in 1..N { mult[i] = mult[i - 1] * sizes[i - 1]; }
-        Self { data: vec![T; n], mult }
+impl<T, const N: usize> MDArray<T, N> {
+    fn new(dimensions: [usize; N]) -> Self where T: Default + Clone {
+        let n = dimensions.iter().product();
+        let data = vec![T::default(); n];
+        Self { data, dimensions }
     }
 
-    fn get(&self, index: [usize; N]) -> &T {
-        let mut pos: usize = 0;
-        for i in 0..N { pos = pos + index[i] * self.mult[i]; }
+    fn get(&self, indices: [usize; N]) -> &T {
+        let pos = self.get_data_position_by_indices(&indices);
         &self.data[pos]
     }
+
+    fn set(&mut self, indices: [usize; N], value: T) {
+        let pos = self.get_data_position_by_indices(&indices);
+        self.data[pos] = value;
+    }
+
+    fn get_data_position_by_indices(&self, indices: &[usize; N]) -> usize {
+        let mut pos: usize = 0;
+        let mut shift: usize = 1;
+        for i in (0..N).rev() {
+            assert!(indices[i] < self.dimensions[i], "MDArray index {} is out of bound", i);
+            pos = pos + indices[i] * shift;
+            shift = shift * self.dimensions[i];
+        }
+        pos
+    }
 }
 
-fn solve(n: i32, a: i32, b: i32) -> BigInt {
-    let mut dp: Vec<Vec<Vec<BigInt>>> = Vec::new();
-    for _ in 0..n {
-        let mut nv = vec![Vec::new(); n as usize + 1];
-        for _ in 0..a {
-            let mut av = vec![Vec::new(); a as usize + 1];
-            for _ in 0..b {
-                bv = vec![BigInt::zero(); b as usize + 1];
-                av.push(bv);
-            }
-            nv.push(av);
+// Solution
+
+fn solve(n: usize, a: usize, b: usize) -> BigInt {
+    let mut dp: MDArray<BigInt, 3> = MDArray::new([n + 1, a + 1, b + 1]);
+    for i in 0..=a {
+        for j in 0..=b {
+            dp.set([0, i, j], BigInt::one());
         }
-        dp.push(nv);
     }
-    for _ in 0..(a + b) {
-        ans = ans * (n + 1);
+    for k in 0..n {
+        for i in 0..=a {
+        for j in 0..=b {
+            for di in 0..=a {
+            for dj in 0..=b {
+                if (i + di > a) || (j + dj > b) { continue; }
+                let idx = [k + 1, i + di, j + dj];
+                dp.set(idx, *dp.get(idx) + *dp.get([k, i, j]));
+            } }
+        } }
     }
-    ans
+    *dp.get([n, a, b])
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
-    let n: i32 = io.sp();
-    let a: i32 = io.sp();
-    let b: i32 = io.ln();
+    let n: usize = io.sp();
+    let a: usize = io.sp();
+    let b: usize = io.ln();
     let ans = solve(n, a, b);
     writeln!(io.w, "{}", ans).unwrap();
 }
