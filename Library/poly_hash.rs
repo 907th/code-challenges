@@ -1,20 +1,27 @@
 // A value of the polynomail rolling hash function.
 // It can be used in Rabin-Karp algorithm for example.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct Hash(u64, u64);
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+struct PolyHash(u64, u64);
 
-impl Hash {
+impl PolyHash {
     const B0: u64 = 10007;
     const B1: u64 = 10009;
     const P0: u64 = 1000000093;
     const P1: u64 = 1000000097;
 
-    fn new(v: u64) -> Self { Self(v, v) }
+    fn new(v: u64) -> Self { Self(v % Self::P0, v % Self::P1) }
     fn zero() -> Self { Self::new(0) }
     fn one() -> Self { Self::new(1) }
 }
 
-impl Add for Hash {
+impl Default for PolyHash {
+    fn default() -> Self {
+        Self::zero()
+    }
+}
+
+
+impl Add for PolyHash {
     type Output = Self;
     fn add(self, other: Self) -> Self {
         Self(
@@ -24,7 +31,17 @@ impl Add for Hash {
     }
 }
 
-impl Mul for Hash {
+impl Sub for PolyHash {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self {
+        Self(
+            self.0.checked_add(Self::P0 - other.0).unwrap() % Self::P0,
+            self.1.checked_add(Self::P1 - other.1).unwrap() % Self::P1
+        )
+    }
+}
+
+impl Mul for PolyHash {
     type Output = Self;
     fn mul(self, other: Self) -> Self {
         Self(
@@ -34,7 +51,7 @@ impl Mul for Hash {
     }
 }
 
-impl Shl<usize> for Hash {
+impl Shl<usize> for PolyHash {
     type Output = Self;
     // x << rhs means x * BASE^rhs (implemented with fast power algorithm).
     // Complexity of this operation is O(log(rhs)).
@@ -54,5 +71,34 @@ impl Shl<usize> for Hash {
             i = i >> 1;
         }
         Self(v0, v1)
+    }
+}
+
+// Data structure which allows to efficiently calculate
+// polynomial rolling hash value of every substring of original string.
+struct StrPolyHash{
+    hashes: Vec<PolyHash>,
+    powers: Vec<PolyHash>
+}
+
+impl StrPolyHash {
+    fn from(s: &String) -> Self {
+        let mut hashes: Vec<PolyHash> = Vec::new();
+        let mut powers: Vec<PolyHash> = Vec::new();
+        let mut h = PolyHash::zero();
+        let mut p = PolyHash::one();
+        for c in s.chars() {
+            h = (h << 1) + PolyHash::new(c as u64);
+            p = p << 1;
+            hashes.push(h);
+            powers.push(p);
+        }
+        Self{ hashes, powers }
+    }
+
+    fn get(&self, pos: usize, len: usize) -> PolyHash {
+        let mut h = self.hashes[pos + len - 1];
+        if pos > 0 { h = h - self.hashes[pos - 1] * self.powers[len - 1] }
+        h
     }
 }
