@@ -8,13 +8,92 @@ use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
 use std::ops::{Neg, Mul, Add, Sub, Shl};
 use std::mem;
 
-fn solve(...) -> ... {
-    ...
+#[derive(Copy, Clone, Debug)]
+struct Number {
+    v: u128,
+    p: u128
+}
+
+impl Number {
+    fn new(v: u128, p: u128) -> Self {
+        Number { v, p }
+    }
+}
+
+impl Add for Number {
+    type Output = Self;
+    fn add(self, other: Self) -> Self {
+        assert!(self.p == other.p, "Moduli must equal");
+        let v = self.v.checked_add(other.v).expect("Overflow in addition");
+        Number { v: v % self.p, p: self.p }
+    }
+}
+
+impl Mul for Number {
+    type Output = Self;
+    fn mul(self, other: Self) -> Self {
+        assert!(self.p == other.p, "Moduli must equal");
+        let v = self.v.checked_mul(other.v).expect("Overflow in multiplication");
+        Number { v: v % self.p, p: self.p }
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
+struct Matrix4x4 {
+    a: Number,
+    b: Number,
+    c: Number,
+    d: Number
+}
+
+impl Matrix4x4 {
+    fn new(a: u128, b: u128, c: u128, d: u128, p: u128) -> Self {
+        Matrix4x4{
+            a: Number::new(a, p),
+            b: Number::new(b, p),
+            c: Number::new(c, p),
+            d: Number::new(d, p)
+        }
+    }
+
+    fn id(p: u128) -> Self {
+        Self::new(1, 0, 0, 1, p)
+    }
+
+    fn fast_pow(self, mut n: u128) -> Self {
+        let mut res = Matrix4x4::id(self.a.p);
+        let mut x = self;
+        while n > 0 {
+            if n & 1 == 1 { res = res * x; }
+            x = x * x;
+            n = n >> 1;
+        }
+        res
+    }
+}
+
+impl Mul for Matrix4x4 {
+    type Output = Self;
+    fn mul(self, other: Self) -> Self {
+        Matrix4x4 {
+            a: self.a * other.a + self.b * other.c,
+            b: self.a * other.b + self.b * other.d,
+            c: self.c * other.a + self.d * other.c,
+            d: self.c * other.b + self.d * other.d
+        }
+    }
+}
+
+fn solve(n: u128, k: u128, m: u128) -> u128 {
+    let ans = Matrix4x4::new(0, k - 1, 1, k - 1, m).fast_pow(n - 1);
+    (Number::new(k - 1, m) * (ans.c + ans.d)).v
 }
 
 fn solve_with_io<R: Read, W: Write>(io: &mut IO<R, W>) {
-    ...
-    let ans = solve(...);
+    let n: u128 = io.ln();
+    let k: u128 = io.ln();
+    let m: u128 = io.ln();
+    let ans = solve(n, k, m);
     writeln!(io.w, "{}", ans).unwrap();
 }
 
