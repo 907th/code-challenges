@@ -34,7 +34,10 @@ class HtmlSamplesExtractor
   private
 
   def fix_le(str)
-    str.gsub("\r\n", "\n")
+    str = str.clone
+    str.gsub!("\r\n", "\n")
+    str += "\n" unless str.end_with? "\n"
+    str
   end
 end
 
