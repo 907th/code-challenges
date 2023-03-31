@@ -9,22 +9,14 @@ use std::mem;
 
 const N: usize = 10000;
 
-fn calc_rects(i: usize) -> usize {
-    if i == 0 { return 0; }
-    let mut ans = 0usize;
-    let mut a = 1usize;
-    let mut b = i;
-    while a <= b {
-        if a * b == i { ans += 1; }
-        a += 1;
-        while a <= b && a * b > i { b -= 1; }
-    }
-    ans
-}
-
 fn solve(m: usize, n: usize, k: usize) -> usize {
     let mut rects = vec![0usize; N + 1];
-    for i in 0..=N { rects[i] = calc_rects(i); }
+    for a in 1..=N {
+        for b in a..=N {
+            if a * b <= N { rects[a * b] += 1; }
+            else { break; }
+        }
+    }
     for l in k..=N {
         if rects[l] == n && rects[l - k] == m { return l; }
     }
