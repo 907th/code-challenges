@@ -64,14 +64,14 @@ impl<R: Read, W: Write> IO<R, W> {
     fn sp<T>(&mut self) -> IOResult<T> where T: std::str::FromStr, <T as std::str::FromStr>::Err: std::error::Error + 'static {
         self.parse_until(0x20, &[0x20 as char])
     }
+}
 
-    fn split<T>(s: &str) -> IOResult<Vec<T>> where T: std::str::FromStr, <T as std::str::FromStr>::Err: std::error::Error + 'static {
-        let mut vec = Vec::new();
-        for part in s.split_whitespace() {
-            vec.push(part.parse()?);
-        }
-        Ok(vec)
+fn split_sp<T>(s: &str) -> IOResult<Vec<T>> where T: std::str::FromStr, <T as std::str::FromStr>::Err: std::error::Error + 'static {
+    let mut vec = Vec::new();
+    for part in s.split_whitespace() {
+        vec.push(part.parse()?);
     }
+    Ok(vec)
 }
 
 // IO delegates all Write methods to self.w
