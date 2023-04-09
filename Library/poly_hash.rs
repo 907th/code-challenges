@@ -20,7 +20,6 @@ impl Default for PolyHash {
     }
 }
 
-
 impl Add for PolyHash {
     type Output = Self;
     fn add(self, other: Self) -> Self {
