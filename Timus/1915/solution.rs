@@ -63,8 +63,8 @@ impl Stack {
     #[allow(dead_code)]
     fn debug(&self) {
         println!(
-            "cap = {}, len = {}, max_len = {}, left = {}, right = {}\n{:?}",
-            self.capacity, self.length, self.max_length, self.left, self.right, self.data
+            "cap = {}, max_len = {}, len = {}, left = {}, right = {}\n{:?}",
+            self.capacity, self.max_length, self.length, self.left, self.right, self.data
         )
     }
 }
@@ -98,7 +98,9 @@ fn read_eval_print<R: Read, W: Write>(io: &mut IO<R, W>) -> IOResult<()> {
 }
 
 fn main() -> IOResult<()> {
-    let mut io = IO::new(std::io::stdin(), std::io::stdout());
+    let stdin = std::io::stdin();
+    let stdout = std::io::stdout();
+    let mut io = IO::new(stdin.lock(), stdout.lock());
     read_eval_print(&mut io)
 }
 
