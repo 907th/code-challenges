@@ -5,7 +5,7 @@ use std::fmt::{Debug, Display};
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
 use std::ops::{Neg, Mul, Add, Sub, Shl};
-use std::mem;
+use std::{time, mem};
 
 struct Stack {
     capacity: usize,
@@ -162,6 +162,56 @@ fn split_sp<T>(s: &str) -> IOResult<Vec<T>> where T: std::str::FromStr, <T as st
 impl<R: Read, W: Write> Write for IO<R, W> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> { self.w.write(buf) }
     fn flush(&mut self) -> std::io::Result<()> { self.w.flush() }
+}
+
+// Benchmark
+
+struct Benchmark<'a> {
+    name: &'a str,
+    running: bool,
+    timer: time::Instant,
+    elapsed: u128,
+    total: u128
+}
+
+#[allow(dead_code)]
+impl<'a> Benchmark<'a> {
+    fn new(name: &'a str, running: bool) -> Self {
+        Self {
+            name,
+            running,
+            timer: time::Instant::now(),
+            elapsed: 0,
+            total: 0
+        }
+    }
+
+    fn start(&mut self) {
+        assert!(!self.running);
+        self.running = true;
+        self.timer = time::Instant::now();
+    }
+
+    fn stop(&mut self) -> u128 {
+        assert!(self.running);
+        let elapsed = self.timer.elapsed().as_millis();
+        self.running = false;
+        self.elapsed = elapsed;
+        self.total += elapsed;
+        elapsed
+    }
+
+    fn debug(&self) {
+        println!(
+            "{}: elapsed {}ms, total {}ms",
+            self.name, self.elapsed, self.total
+        );
+    }
+}
+
+#[allow(dead_code)]
+fn sleep(ms: u64) {
+    std::thread::sleep(time::Duration::from_millis(ms));
 }
 
 // Tests
