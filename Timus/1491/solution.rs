@@ -16,12 +16,12 @@ fn solve(n: usize, v: Vec<(usize, usize, u32)>) -> Vec<u32> {
     let mut s = 0usize;
     let mut f = 0usize;
     let mut x = 0u32;
-    for i in 0..n {
-        while s < start.len() && v[start[s]].0 <= i + 1 {
+    for i in 1..=n {
+        while s < start.len() && v[start[s]].0 <= i {
             x += v[start[s]].2;
             s += 1;
         }
-        while f < finish.len() && v[finish[f]].1 < i + 1 {
+        while f < finish.len() && v[finish[f]].1 < i {
             x -= v[finish[f]].2;
             f += 1;
         }
