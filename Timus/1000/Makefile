@@ -1,12 +1,28 @@
-.PHONY: build_and_run
-build_and_run: build run
-
-BUILD_ARGS=-x c++ -std=c++2a -O2 -Wl,-stack_size,0x4000000
-
 .PHONY: build
 build:
-	g++ ${BUILD_ARGS} -o solution solution.cpp
+	cargo build --bin solution
 
 .PHONY: run
 run:
-	./solution
+	cargo run --bin solution
+
+.PHONY: test
+test:
+	cargo test --bin solution -- --nocapture
+
+.PHONY: sf singlefile
+sf: singlefile
+singlefile:
+	../singlefile $(shell pwd)
+
+.PHONY: sf_build
+sf_build:
+	cargo build --bin singlefile
+
+.PHONY: sf_run
+sf_run:
+	cargo run --bin singlefile
+
+.PHONY: sf_copy
+sf_copy:
+	cat src/bin/singlefile.rs | pbcopy

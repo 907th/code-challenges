@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+
+class SingleFileGenerator
+  SOLUTION_PATH = "src/main.rs"
+  SINGLEFILE_PATH = "src/bin/singlefile.rs"
+  LIBRARY_DIR = "../../Library"
+  EXTERN_CRATE_REGEXP = /^\s*extern\s+crate\s+(\w*);\n*/
+  TEST_MOD_REGEXP = /^\s*#\[cfg\(test\)\]\n\s*mod\s+test;\n*/
+
+  attr_reader :working_dir
+
+  def initialize(working_dir)
+    @working_dir = working_dir
+  end
+
+  def run
+    puts "Generate singlefile.rs in #{working_dir}"
+    solution_path = expand_path(SOLUTION_PATH)
+    singlefile_path = expand_path(SINGLEFILE_PATH)
+    solution_src = File.read(solution_path)
+    lib_names = detect_used_libraries(solution_src)
+    puts "Solution uses libraries: #{lib_names}"
+    libs_src = generate_libraries_code(lib_names)
+    singlefile_src = embed_libraries_to_solution(solution_src, libs_src)
+    puts "Writing #{singlefile_path}"
+    File.write(singlefile_path, singlefile_src)
+    puts "Done"
+  end
+
+  private
+
+  def detect_used_libraries(src)
+    src.scan(EXTERN_CRATE_REGEXP).flatten.flat_map do |lib_name|
+      lib_src = get_lib_src(lib_name)
+      [lib_name, *detect_used_libraries(lib_src)]
+    end.uniq.sort
+  end
+
+  def generate_libraries_code(lib_names)
+    lib_names.map { |lib_name|
+      lib_src = get_lib_src(lib_name)
+      "mod #{lib_name} {\n#{lib_src.strip.gsub(/^/, "  ")}\n}"
+    }.join("\n\n")
+  end
+
+  def embed_libraries_to_solution(solution_src, libs_src)
+    sanitize = ->(src) { src.gsub(EXTERN_CRATE_REGEXP, "").gsub(TEST_MOD_REGEXP, "").strip }
+    "#{sanitize.(solution_src)}\n\n#{sanitize.(libs_src)}"
+  end
+
+  def get_lib_src(lib_name)
+    @get_lib_src ||= {}
+    return @get_lib_src[lib_name] if @get_lib_src.key?(lib_name)
+    lib_path = File.join(LIBRARY_DIR, lib_name, "src/lib.rs")
+    lib_src = File.read(expand_path(lib_path))
+    @get_lib_src[lib_name] = lib_src
+    lib_src
+  end
+
+  def expand_path(path)
+    File.expand_path(path, working_dir)
+  end
+end
+
+SingleFileGenerator.new(ARGV[0]).run

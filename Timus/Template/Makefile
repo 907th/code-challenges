@@ -1,18 +1,28 @@
-SRC=solution.rs
-EXE=solution.exe
+.PHONY: build
+build:
+	cargo build --bin solution
 
-.PHONY: debug
-debug:
-	rustc -o ${EXE} ${SRC}
-	./${EXE}
-
-.PHONY: release
-release:
-	rustc -O -o ${EXE} ${SRC}
-	./${EXE}
+.PHONY: run
+run:
+	cargo run --bin solution
 
 .PHONY: test
 test:
-	rustc --test -o ${EXE} ${SRC}
-	./${EXE} --nocapture
+	cargo test --bin solution -- --nocapture
 
+.PHONY: sf singlefile
+sf: singlefile
+singlefile:
+	../singlefile $(shell pwd)
+
+.PHONY: sf_build
+sf_build:
+	cargo build --bin singlefile
+
+.PHONY: sf_run
+sf_run:
+	cargo run --bin singlefile
+
+.PHONY: sf_copy
+sf_copy:
+	cat src/bin/singlefile.rs | pbcopy
