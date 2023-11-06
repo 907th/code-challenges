@@ -1,0 +1,6 @@
+[package]
+name = "solution"
+version = "0.1.0"
+
+[dependencies]
+lib_io = { path = "../../Library/lib_io" }
