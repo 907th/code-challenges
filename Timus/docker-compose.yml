@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  godev:
+    image: golang:1.14.6
+    working_dir: /app
+    volumes:
+      - .:/app
